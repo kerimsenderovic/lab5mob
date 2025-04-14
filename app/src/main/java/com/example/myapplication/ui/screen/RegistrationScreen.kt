@@ -53,7 +53,7 @@ fun CarRentalRegistrationScreen() {
         modifier = Modifier.fillMaxSize().background(Color(0xFF1B1B1B)),
         contentAlignment = Alignment.BottomCenter
     ) {
-
+        // Corrected Image usage
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = R.drawable.car22),
@@ -135,6 +135,3 @@ fun CarRentalRegistrationScreen() {
         }
     }
 }
-
-
-

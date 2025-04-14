@@ -2,52 +2,33 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.myapplication.services.ForegroundService
+import com.example.myapplication.ui.screen.CarScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIntent(intent)
 
         setContent {
             MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    StartServiceScreen(
-                        onStartService = {
-                            val serviceIntent = Intent(this, ForegroundService::class.java)
-                            startService(serviceIntent)
-                        }
-                    )
-                }
+                CarScreen()
             }
         }
     }
-}
 
-@Composable
-fun StartServiceScreen(onStartService: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Button(
-            onClick = onStartService,
-            modifier = Modifier
-                .width(250.dp)
-                .height(60.dp)
-        ) {
-            Text("Start Foreground Service")
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == "com.example.myapplication.CUSTOM_ACTION") {
+            Toast.makeText(this, "Custom Intent Received!", Toast.LENGTH_LONG).show()
         }
     }
 }
