@@ -1,30 +1,53 @@
 package com.example.myapplication.viewmodel
 
-
-
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.model.Car
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data_model.Car
+import com.example.myapplication.repository.CarRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CarViewModel : ViewModel() {
+@HiltViewModel
+class CarViewModel @Inject constructor(
+    private val carRepository: CarRepository
+) : ViewModel() {
+
 
     private val _cars = MutableStateFlow<List<Car>>(emptyList())
     val cars: StateFlow<List<Car>> = _cars
 
-    val carTags = mutableSetOf("Electric", "SUV", "Diesel")
-    val carMap = mutableMapOf(1 to "Audi", 2 to "BMW")
+
+    init {
+        viewModelScope.launch {
+            carRepository.getAllCars().collect { carList ->
+                _cars.value = carList
+            }
+        }
+    }
+
 
     fun addCar(car: Car) {
-        _cars.update { it + car }
+        viewModelScope.launch {
+            carRepository.insertCar(car)
+            _cars.update { it + car }
+        }
     }
+
 
     fun removeCar(car: Car) {
-        _cars.update { it.filterNot { c -> c.id == car.id } }
+        viewModelScope.launch {
+            carRepository.deleteCar(car)
+            _cars.update { it.filterNot { c -> c.id == car.id } }
+        }
     }
 
+
     fun clearCars() {
-        _cars.value = emptyList()
+        viewModelScope.launch {
+            carRepository.clearCars()
+            _cars.value = emptyList()
+        }
     }
 }
